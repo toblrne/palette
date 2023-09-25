@@ -32,6 +32,6 @@ export const getSignedUrl = async (info: ImageInfo): Promise<SignedUrlResult> =>
     const url = `https://${process.env.BUCKET_NAME}.s3.amazonaws.com/${fileName}`;
     return { signedUrl, url };
   } catch (e) {
-    throw new Error(`Error getting presigned URL: ${e.message}`);
+    throw new Error(`Error getting presigned URL: ${(e as Error).message}`);
   }
 };
