@@ -1,17 +1,22 @@
+import { Box } from '@chakra-ui/react'
 import type { NextPage } from 'next'
 import Head from 'next/head'
+import Navbar from "../components/Navbar";
+
 
 const Home: NextPage = () => {
   return (
-    <div>
+    <Box minH="100vh" position="relative">
       <Head>
-        <title> Palette </title>
+        Palette
       </Head>
-      <div>
-        Hello
-      </div>
-    </div>
+      <Navbar />
+      <Box>
+        photos stub
+      </Box>
+    </Box>
   )
 }
 
 export default Home
+
