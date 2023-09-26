@@ -1,11 +1,10 @@
 import express, { Request, Response } from 'express';
-import dotenv from 'dotenv';
 import postRoutes from './routes/postRoutes';
 import userRoutes from './routes/userRoutes';
 import commentRoutes from './routes/commentRoutes';
 import likeRoutes from './routes/likeRoutes';
 
-dotenv.config();
+require('dotenv').config();
 
 const app = express();
 const PORT = 3001;

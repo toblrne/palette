@@ -1,4 +1,4 @@
-import AWS from 'aws-sdk';
+import * as AWS from 'aws-sdk';
 
 AWS.config.update({
   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
@@ -32,6 +32,10 @@ export const getSignedUrl = async (info: ImageInfo): Promise<SignedUrlResult> =>
     const url = `https://${process.env.BUCKET_NAME}.s3.amazonaws.com/${fileName}`;
     return { signedUrl, url };
   } catch (e) {
-    throw new Error(`Error getting presigned URL: ${e.message}`);
+    if (e instanceof Error) {
+      throw new Error(`Error getting presigned URL: ${e.message}`);
+    } else {
+      throw new Error('An unknown error occurred');
+    }
   }
 };
