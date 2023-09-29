@@ -21,8 +21,8 @@ export const sendEmail = (
     apiVersion: "latest",
     region: getEnvVar('AWS_REGION'),
     credentials: {
-      accessKeyId: getEnvVar('ACCESS_KEY_ID'),
-      secretAccessKey: getEnvVar('ACCESS_SECRET'),
+      accessKeyId: getEnvVar('AWS_ACCESS_KEY_ID'),
+      secretAccessKey: getEnvVar('AWS_SECRET_ACCESS_KEY'),
     },
   });
 
