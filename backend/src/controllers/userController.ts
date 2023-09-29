@@ -8,7 +8,14 @@ import argon2 from "argon2";
 const prisma = new PrismaClient();
 
 export const getUser = async (req: Request, res: Response) => {
+  console.log('getUser called');
   const { userId } = req.params;
+
+  if (!userId || isNaN(Number(userId))) {
+    console.error('userId is missing or invalid');
+    return res.status(400).json({ error: 'userId is missing or invalid' });
+  }
+
   try {
     const user = await prisma.user.findUnique({
       where: { id: Number(userId) },
@@ -26,7 +33,9 @@ export const getUser = async (req: Request, res: Response) => {
 };
 
 export const loginUser = async (req: Request, res: Response) => {
+
   const { email } = req.body;
+  console.log("Email", email)
   try {
     const unhashed = v4();
     const hashed = await argon2.hash(unhashed);
@@ -36,7 +45,7 @@ export const loginUser = async (req: Request, res: Response) => {
     await sendEmail({
       recipient: email,
       subject: 'Login Verification',
-      body: `<a href="${process.env.API_URL || 'http://localhost:3001'}/verify?email=${encodeURIComponent(email)}&token=${unhashed}">Verify</a>`,
+      body: `<a href="${process.env.API_URL || 'http://localhost:3001'}/users/verify?email=${encodeURIComponent(email)}&token=${unhashed}">Verify</a>`,
     });
 
     res.status(200).json({ message: 'Verification email sent.' });
@@ -47,6 +56,7 @@ export const loginUser = async (req: Request, res: Response) => {
 };
 
 export const verifyUser = async (req: Request, res: Response) => {
+  console.log('verifyUser called');
   const { email, token } = req.query;
   if (!email || !token) {
     return res.status(400).json({ error: 'Email and token are required' });
@@ -71,7 +81,7 @@ export const verifyUser = async (req: Request, res: Response) => {
       user = await prisma.user.create({ data: { email: email as string, username } });
     }
 
-    (req.session as any).userId = user.id;
+    req.session!.userId = user.id;
 
     res.status(200).json({ message: 'User verified and logged in.' });
   } catch (error) {
@@ -83,7 +93,7 @@ export const verifyUser = async (req: Request, res: Response) => {
 
 export const logoutUser = async (req: Request, res: Response) => {
   try {
-    req.session.destroy(err => {
+    req.session!.destroy(err => {
       if (err) throw err;
       res.clearCookie('pale'); // Replace with your session cookie name
       res.status(200).json({ message: 'Logged Out' });

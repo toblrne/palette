@@ -17,6 +17,7 @@ function getEnvVar(key: string): string {
 export const sendEmail = (
   info: EmailInfo
 ): Promise<AWS.AWSError | AWS.SES.SendEmailResponse> => {
+  console.log('Sending Email:', info)
   const ses = new AWS.SES({
     apiVersion: "latest",
     region: getEnvVar('AWS_REGION'),

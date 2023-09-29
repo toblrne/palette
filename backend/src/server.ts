@@ -21,8 +21,6 @@ app.use(express.json());
 const RedisStore = connectRedis(session);
 const redisStoreInstance = new RedisStore({ client: redis });
 
-app.use(express.json());
-
 app.use(
   cors({
     origin:
