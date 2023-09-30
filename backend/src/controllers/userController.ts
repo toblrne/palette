@@ -11,7 +11,7 @@ export const getMe = async (req: Request, res: Response): Promise<void> => {
   const userId = req.session!.userId;
 
   if (!userId) {
-    res.status(404).json("no user");
+    res.status(401).json({ error: "You're not authenticated" });
     return;
   }
 
@@ -26,7 +26,7 @@ export const getMe = async (req: Request, res: Response): Promise<void> => {
     });
 
     if (!user) {
-      res.status(404).json("no user");
+      res.status(404).json({ error: "User not found" });
       return;
     }
     res.status(200).json({ user });
@@ -35,6 +35,7 @@ export const getMe = async (req: Request, res: Response): Promise<void> => {
     res.status(500).json({ error: "Error fetching user" });
   }
 };
+
 
 
 
@@ -89,19 +90,21 @@ export const loginUser = async (req: Request, res: Response) => {
 export const verifyUser = async (req: Request, res: Response) => {
   console.log('verifyUser called');
   const { email, token } = req.query;
+  const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3000'; // Replace this with your frontend URL
+
   if (!email || !token) {
-    return res.status(400).json({ error: 'Email and token are required' });
+    return res.redirect(`${FRONTEND_URL}/?error=Email and token are required`);
   }
 
   try {
     const hashedToken = await redis.get(email as string);
     if (!hashedToken) {
-      return res.status(401).json({ error: 'Invalid or expired token' });
+      return res.redirect(`${FRONTEND_URL}/?error=Invalid or expired token`);
     }
 
     const isValid = await argon2.verify(hashedToken, token as string);
     if (!isValid) {
-      return res.status(401).json({ error: 'Invalid token' });
+      return res.redirect(`${FRONTEND_URL}/?error=Invalid token`);
     }
 
     await redis.del(email as string);
@@ -114,23 +117,25 @@ export const verifyUser = async (req: Request, res: Response) => {
 
     req.session!.userId = user.id;
 
-    res.status(200).json({ message: 'User verified and logged in.' });
+    res.redirect(`${FRONTEND_URL}/?login=success`); // Redirect to frontend with success message
   } catch (error) {
     console.error("Error verifying user", error);
-    res.status(500).json({ error: "Error verifying user" });
+    res.redirect(`${FRONTEND_URL}/?error=Error verifying user`); // Redirect to frontend with error message
   }
 };
 
 
 export const logoutUser = async (req: Request, res: Response) => {
   try {
-    req.session!.destroy(err => {
-      if (err) throw err;
-      res.clearCookie('pale'); // Replace with your session cookie name
-      res.status(200).json({ message: 'Logged Out' });
+    req.session!.destroy((error) => {
+      if (error) {
+        console.error('Error destroying session:', error);
+      }
+      res.clearCookie('pale');
+      res.json({ log: "out" })
     });
   } catch (error) {
-    console.error("Error during logout", error);
-    res.status(500).json({ error: "Error during logout" });
+    console.error('Error during logout', error);
+    res.status(500).json({ error: 'Error during logout' });
   }
 };
