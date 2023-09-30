@@ -7,6 +7,37 @@ import argon2 from "argon2";
 
 const prisma = new PrismaClient();
 
+export const getMe = async (req: Request, res: Response): Promise<void> => {
+  const userId = req.session!.userId;
+
+  if (!userId) {
+    res.status(404).json("no user");
+    return;
+  }
+
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      include: {
+        posts: true,
+        likes: true,
+        comments: true
+      }
+    });
+
+    if (!user) {
+      res.status(404).json("no user");
+      return;
+    }
+    res.status(200).json({ user });
+  } catch (error) {
+    console.error("Error fetching user", error);
+    res.status(500).json({ error: "Error fetching user" });
+  }
+};
+
+
+
 export const getUser = async (req: Request, res: Response) => {
   console.log('getUser called');
   const { userId } = req.params;

@@ -3,6 +3,8 @@ import * as userController from '../controllers/userController';
 
 const router = Router();
 
+
+router.get('/me', userController.getMe);
 router.get('/verify', userController.verifyUser);
 router.get('/:userId', userController.getUser);
 router.post('/login', userController.loginUser);
