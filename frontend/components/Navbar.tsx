@@ -1,14 +1,16 @@
 import { Box, Flex, Button, Text, Menu, MenuButton, MenuItem, MenuList, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalFooter, ModalCloseButton, Input, useDisclosure, useToast } from '@chakra-ui/react'
 import { useRouter } from "next/router";
 import { User } from '../types/user';
-import { Dispatch, SetStateAction, useState } from 'react'
+import { useState } from 'react'
 import axios from 'axios'
+import useUserStore from '../store/userStore';
 
 
-const Navbar = ({ user, setUser }: { user: User | null, setUser: Dispatch<SetStateAction<User | null>> }) => {
+const Navbar = () => {
 
   const router = useRouter();
 
+  const { user, setUser } = useUserStore();
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
@@ -23,6 +25,21 @@ const Navbar = ({ user, setUser }: { user: User | null, setUser: Dispatch<SetSta
   } else if (router.pathname.includes("liked")) {
     desc = "Liked photos";
   }
+
+  const handleUpload = () => {
+    if (user?.id) {
+      router.push(`/${user.id}/upload`);
+    } else {
+      toast({
+        title: "Not Logged In",
+        description: `Please log in!`,
+        status: "error",
+        duration: 9000,
+        isClosable: true,
+      });
+    }
+  }
+
 
   const login = async () => {
     try {
@@ -70,9 +87,7 @@ const Navbar = ({ user, setUser }: { user: User | null, setUser: Dispatch<SetSta
 
               <MenuList>
                 <MenuItem
-                  onClick={() => {
-                    router.push("/u/create-photo");
-                  }}
+                  onClick={handleUpload}
                 >
                   Create photo
                 </MenuItem>

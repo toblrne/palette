@@ -4,10 +4,11 @@ import Head from 'next/head';
 import Navbar from "../components/Navbar";
 import axios from 'axios';
 import { User } from '../types/user';
+import useUserStore from '../store/userStore';
 import { useEffect, useState } from 'react';
 
 const Home: NextPage = () => {
-  const [user, setUser] = useState<User | null>(null);
+  const { user, setUser } = useUserStore();
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -31,7 +32,7 @@ const Home: NextPage = () => {
       <Head>
         <title>Palette</title>
       </Head>
-      <Navbar user={user} setUser={setUser} />
+      <Navbar />
       <Box>
         {/* photos stub */}
         <Box>
