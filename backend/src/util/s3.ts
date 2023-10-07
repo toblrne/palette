@@ -23,7 +23,6 @@ export const getSignedUrl = async (info: ImageInfo): Promise<SignedUrlResult> =>
   const params = {
     Bucket: process.env.BUCKET_NAME as string,
     Key: fileName,
-    ACL: "public-read",
     ContentType: info.fileType,
   };
 

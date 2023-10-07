@@ -4,26 +4,17 @@ import Navbar from '../../components/Navbar';
 import { Box, Input, Heading, Flex, Text, Button } from '@chakra-ui/react';
 import Head from 'next/head';
 import useUserStore from '../../store/userStore';
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
+import axios from 'axios'
 
 
 const UploadPage: React.FC = () => {
-  const { user, setUser } = useUserStore();
+  const { user } = useUserStore();
+  const [caption, setCaption] = useState<string>('');
+  const [file, setFile] = useState<File | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const router = useRouter();
-  // const { u } = router.query; // Get the dynamic parameter from the URL
-
-  // console.log(user?.id, u)
-
-  // // Check if u matches user.id
-  // const isMatchingUser = u === user?.id.toString();
-
-  // useEffect(() => {
-  //   // If the user data has been fetched and it's not the correct user, redirect them
-  //   if (user && !isMatchingUser) {
-  //     router.push('/'); // Redirect to home page or any other page you prefer
-  //   }
-  // }, [user, isMatchingUser, router]);
 
   useEffect(() => {
     // If the user data has been fetched and it's not the correct user, redirect them
@@ -31,6 +22,53 @@ const UploadPage: React.FC = () => {
       router.push('/'); // Redirect to home page or any other page you prefer
     }
   }, [user, router]);
+
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files) {
+      setFile(event.target.files[0]);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!file || !user) return;
+
+    setLoading(true);
+
+    try {
+      // Step 1: Get a presigned URL from the backend
+      const { data } = await axios.get(`http://localhost:3001/posts/url`, {
+        params: {
+          fileName: file.name,
+          fileType: file.type
+        }
+      });
+      const { presignedURL, url } = data;
+
+      // Step 2: Use the presigned URL to upload the image
+      await axios.put(presignedURL, file, {
+        headers: {
+          'Content-Type': file.type,
+        },
+      });
+
+      // Step 3: Send the image URL along with the caption to the backend
+      const response = await axios.post('http://localhost:3001/posts', {
+        userId: user.id,
+        imageUrl: url,
+        caption
+      });
+
+      // ... handle success, perhaps redirect to the post or a success message
+
+      console.log("Successfully uploaded")
+
+    } catch (error) {
+      console.error('Upload failed:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
 
   return (
@@ -41,38 +79,34 @@ const UploadPage: React.FC = () => {
       <Navbar />
       <Flex maxW="500px" px={5} py={5} direction="column" >
         <Heading mb={6}>Upload a photo</Heading>
-        <form>
+        <form onSubmit={handleSubmit}>
           <Flex direction="column">
             <Text mb={2}>Caption</Text>
             <Input
               placeholder="caption"
               mb={5}
-            // onChange={(e) => {
-            //   setPhoto({ caption: e.target.value, image: photo.image });
-            // }}
+              value={caption}
+              onChange={(e) => setCaption(e.target.value)}
             />
             <input
               required
               name="image"
               type="file"
               accept="image/*"
-            // onChange={(e) => {
-            //   setPhoto({ caption: photo.caption, image: e.target.files[0] });
-            // }}
+              onChange={handleImageChange}
             />
             <Button
               mt={6}
               type="submit"
               colorScheme="teal"
-              // isLoading={loading}
+              isLoading={loading}
               loadingText="uploading..."
             >
               Submit
             </Button>
           </Flex>
-
         </form>
-      </Flex >
+      </Flex>
     </Flex>
 
   );
@@ -80,86 +114,3 @@ const UploadPage: React.FC = () => {
 
 export default UploadPage;
 
-//   onSubmit={async (e) => {
-//     if (loading) {
-//       return toast({
-//         position: "top-left",
-//         title: "Error",
-//         description: "Quit the spam, friend",
-//         status: "error",
-//         duration: 9000,
-//         isClosable: true,
-//       });
-//     }
-//     const imageFile = photo.image;
-
-//     setLoading(true);
-
-//     e.preventDefault();
-
-//     const {data} = await signUrl({
-//       fileName: imageFile.name,
-//       fileType: imageFile.type,
-//     });
-
-//     const {signedUrl, url, finalName} = data;
-
-//     const {status} = await uploadPhoto({
-//       signedUrl,
-//       imageFile,
-//       type: imageFile.type,
-//     });
-
-//     if (status >= 400) {
-//       return toast({
-//         position: "top-left",
-//         title: "Upload failed",
-//         description: "Please try again",
-//         status: "error",
-//         duration: 9000,
-//         isClosable: true,
-//       });
-//     }
-
-//     const {data: returned } = await resize({key: finalName });
-
-//     //should not be possible
-//     if (returned === "err") {
-//       return;
-//     }
-
-//     await addPhoto({caption: photo.caption, url });
-
-//     setLoading(false);
-
-//     await router.push("/");
-//   }}
-// >
-//   <Box d="flex" flexDirection="column">
-//     <Text mb={2}>Caption</Text>
-//     <Input
-//       placeholder="caption"
-//       mb={5}
-//       onChange={(e) => {
-//         setPhoto({caption: e.target.value, image: photo.image });
-//       }}
-//     />
-//     <input
-//       required
-//       name="image"
-//       type="file"
-//       accept="image/*"
-//       onChange={(e) => {
-//         setPhoto({caption: photo.caption, image: e.target.files[0] });
-//       }}
-//     />
-//     <Button
-//       mt={6}
-//       type="submit"
-//       colorScheme="teal"
-//       isLoading={loading}
-//       loadingText="uploading..."
-//     >
-//       Submit
-//     </Button>
-//   </Box>
