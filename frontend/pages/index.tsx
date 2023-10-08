@@ -5,7 +5,7 @@ import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { Post } from '../types/types';
 import useUserStore from '../store/userStore';
-import { Box, Image } from "@chakra-ui/react";
+import { Box, Flex, Grid, Image } from "@chakra-ui/react";
 import { useInView } from 'react-intersection-observer';
 
 const Home: NextPage = () => {
@@ -62,17 +62,25 @@ const Home: NextPage = () => {
         <title>Palette</title>
       </Head>
       <Navbar />
-      <Box>
-        {posts.map(post => (
-          <Box key={post.id} marginBottom="20px">
-            <Image src={post.imageUrl} alt={post.caption || 'Post image'} />
-          </Box>
-        ))}
-        <div ref={ref}>
-          {hasMore && <p>Loading more posts...</p>}
-        </div>
-      </Box>
-    </Box>
+      <Flex justify="center" alignItems="center" width="100%" mt={5}>
+        <Grid templateColumns={['1fr', '1fr 1fr', '1fr 1fr 1fr']} gap={20}>
+          {posts.map(post => (
+            <Box key={post.id} width="500px" height="500px" marginBottom="20px">
+              <Image
+                src={post.imageUrl}
+                alt={post.caption || 'Post image'}
+                boxSize="100%"
+                objectFit="cover"
+                loading="lazy"
+              />
+            </Box>
+          ))}
+        </Grid>
+      </Flex>
+      <div ref={ref}>
+        {hasMore && <p>Loading more posts...</p>}
+      </div>
+    </Box >
   );
 };
 
