@@ -3,7 +3,7 @@ import { NextPage } from 'next';
 import Head from 'next/head';
 import Navbar from "../components/Navbar";
 import axios from 'axios';
-import { User } from '../types/user';
+import { Comment, Like, User, Post } from '../types/types';
 import useUserStore from '../store/userStore';
 import { useEffect, useState } from 'react';
 

@@ -44,7 +44,15 @@ export const createPost = async (req: Request, res: Response) => {
 
 export const getAllPosts = async (req: Request, res: Response) => {
   try {
+    const skip = Number(req.query.skip) || 0;
+    const limit = Number(req.query.limit) || 9;
+
     const posts = await prisma.post.findMany({
+      skip: skip,  // use the 'skip' value directly
+      take: limit,
+      orderBy: {
+        createdAt: 'desc' // latest posts first
+      },
       include: {
         user: true,
         comments: true,
@@ -57,6 +65,8 @@ export const getAllPosts = async (req: Request, res: Response) => {
     res.status(500).json({ error: "Error getting posts" });
   }
 };
+
+
 
 export const getPostById = async (req: Request, res: Response) => {
   try {
