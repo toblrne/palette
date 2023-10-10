@@ -1,8 +1,6 @@
 import { Request, Response } from 'express';
 import { getSignedUrl } from '../util/s3';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import prisma from '../prisma';
 
 export const getPresignedUrl = async (req: Request, res: Response) => {
   try {

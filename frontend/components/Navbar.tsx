@@ -1,6 +1,6 @@
 import { Box, Flex, Button, Text, Menu, MenuButton, MenuItem, MenuList, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalFooter, ModalCloseButton, Input, useDisclosure, useToast } from '@chakra-ui/react'
 import { useRouter } from "next/router";
-import { User } from '../types/user';
+import { User } from '../types/types';
 import { useState } from 'react'
 import axios from 'axios'
 import useUserStore from '../store/userStore';
@@ -77,7 +77,6 @@ const Navbar = () => {
         >
           Palette
         </Text>
-        {user?.username}
         <Box ml="auto">
           {user ? (
             <Menu>

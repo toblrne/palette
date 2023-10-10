@@ -1,6 +1,7 @@
 import { NextPage } from 'next';
 import Head from 'next/head';
 import Navbar from "../components/Navbar";
+import Photo from "../components/Photo";
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { Post } from '../types/types';
@@ -65,21 +66,13 @@ const Home: NextPage = () => {
       <Flex justify="center" alignItems="center" width="100%" mt={5}>
         <Grid templateColumns={['1fr', '1fr 1fr', '1fr 1fr 1fr']} gap={20}>
           {posts.map(post => (
-            <Box key={post.id} width="500px" height="500px" marginBottom="20px">
-              <Image
-                src={post.imageUrl}
-                alt={post.caption || 'Post image'}
-                boxSize="100%"
-                objectFit="cover"
-                loading="lazy"
-              />
-            </Box>
+            <Photo photo={post} key={post.id} />
           ))}
         </Grid>
       </Flex>
-      <div ref={ref}>
+      <Box ref={ref}>
         {hasMore && <p>Loading more posts...</p>}
-      </div>
+      </Box>
     </Box >
   );
 };

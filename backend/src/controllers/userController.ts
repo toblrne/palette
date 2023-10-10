@@ -1,11 +1,9 @@
 import { Request, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
 import { sendEmail } from '../util/ses';
 import { redis } from '../util/redis'
 import { v4 } from "uuid";
 import argon2 from "argon2";
-
-const prisma = new PrismaClient();
+import prisma from '../prisma'
 
 export const getMe = async (req: Request, res: Response): Promise<void> => {
   const userId = req.session!.userId;

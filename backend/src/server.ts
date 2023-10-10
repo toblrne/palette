@@ -5,7 +5,6 @@ import connectRedis from 'connect-redis';
 
 import { redis } from './util/redis';
 import cors from 'cors';
-
 import postRoutes from './routes/postRoutes';
 import userRoutes from './routes/userRoutes';
 import commentRoutes from './routes/commentRoutes';

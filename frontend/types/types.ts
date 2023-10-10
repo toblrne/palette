@@ -2,6 +2,7 @@
 
 // Comment type
 export interface Comment {
+  user: any;
   id: number;
   content: string;
   userId: number;
@@ -20,6 +21,7 @@ export interface Like {
 
 // Post type
 export interface Post {
+  user: any;
   id: number;
   imageUrl: string;
   caption?: string;
