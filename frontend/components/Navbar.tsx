@@ -90,14 +90,21 @@ const Navbar = ({ user, setUser }: NavbarProps) => {
                 <MenuItem
                   onClick={handleUpload}
                 >
-                  Create photo
+                  Upload Photo
                 </MenuItem>
                 <MenuItem
                   onClick={() => {
                     router.push(`/${user?.id}/photos`);
                   }}
                 >
-                  Your photos
+                  Your Photos
+                </MenuItem>
+                <MenuItem
+                  onClick={() => {
+                    router.push(`/${user?.id}/liked`);
+                  }}
+                >
+                  Liked Photos
                 </MenuItem>
                 <MenuItem
                   onClick={async () => {

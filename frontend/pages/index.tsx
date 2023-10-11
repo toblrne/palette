@@ -28,6 +28,9 @@ const Home: NextPage = () => {
           if (res.data.length > 0) {
             setPosts(prevPosts => [...prevPosts, ...res.data]);
             setPage(prevPage => prevPage + 1);
+            if (res.data.posts.length < 9) {
+              setHasMore(false);
+            }
           } else {
             setHasMore(false);
           }

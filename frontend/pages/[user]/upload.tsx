@@ -16,11 +16,7 @@ const UploadPage: React.FC = () => {
 
   const router = useRouter();
 
-  useEffect(() => {
-    if (!user) {
-      router.push('/');
-    }
-  }, [user, router]);
+
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {

@@ -10,6 +10,7 @@ router.get('/:postId', postController.getPostById);
 router.put('/:postId', postController.updatePost);
 router.get('/', postController.getAllPosts);
 router.delete('/:postId', postController.deletePost);
+router.get('/likes/user/:userId', postController.getLikedPostsByUser);
 
 
 export default router;

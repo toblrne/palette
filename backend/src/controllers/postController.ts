@@ -152,3 +152,47 @@ export const getPostsByUser = async (req: Request, res: Response) => {
     res.status(500).json({ error: "Error getting posts by user" });
   }
 };
+
+export const getLikedPostsByUser = async (req: Request, res: Response) => {
+  try {
+    const userId = parseInt(req.params.userId);
+    const skip = Number(req.query.skip) || 0;
+    const limit = Number(req.query.limit) || 9;  // default to 9 posts if not provided
+
+    if (isNaN(userId)) return res.status(400).json({ error: "Invalid User ID" });
+
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) return res.status(404).json({ error: "User not found" });
+
+    const likedPosts = await prisma.post.findMany({
+      where: {
+        likes: {
+          some: {
+            userId: userId
+          }
+        }
+      },
+      orderBy: {
+        createdAt: 'desc' // latest liked posts first
+      },
+      include: {
+        user: true,
+        comments: true,
+        likes: true,
+      },
+      skip: skip,
+      take: limit,
+    });
+
+    res.status(200).json({
+      username: user.username,
+      posts: likedPosts
+    });
+  } catch (error) {
+    console.error("Error getting liked posts by user", error);
+    res.status(500).json({ error: "Error getting liked posts by user" });
+  }
+};

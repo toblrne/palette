@@ -35,6 +35,9 @@ const UserPosts: NextPage = () => {
           if (res.data.posts.length > 0) {
             setPosts(prevPosts => [...prevPosts, ...res.data.posts]);
             setPage(prevPage => prevPage + 1);
+            if (res.data.posts.length < 9) {
+              setHasMore(false);
+            }
           } else {
             setHasMore(false);
           }
@@ -59,13 +62,15 @@ const UserPosts: NextPage = () => {
         <Text fontSize="xl" fontWeight="bold" mb={4}>
           {username ? `Posts by ${username}` : 'Loading...'}
         </Text>
-        {posts.length > 0 ? <Grid templateColumns={['1fr', '1fr 1fr', '1fr 1fr 1fr']} gap={20}>
-          {posts.map(post => (
-            <Photo photo={post} key={post.id} />
-          ))}
-        </Grid> :
-          <Text> no posts </Text>
-        }
+        {posts.length > 0 ? (
+          <Grid templateColumns={['1fr', '1fr 1fr', '1fr 1fr 1fr']} gap={20}>
+            {posts.map(post => (
+              <Photo photo={post} key={post.id} />
+            ))}
+          </Grid>
+        ) : (
+          username && <Text mt={5}>No posts</Text>
+        )}
         <Box ref={ref}>
           {hasMore && <p>Loading more posts...</p>}
         </Box>
