@@ -3,13 +3,13 @@ import { useRouter } from 'next/router';
 import Navbar from '../../components/Navbar';
 import { Box, Input, Heading, Flex, Text, Button } from '@chakra-ui/react';
 import Head from 'next/head';
-import useUserStore from '../../store/userStore';
+import useCurrentUser from '../../hooks/useCurrentUser';
 import { useEffect, useState } from 'react'
 import axios from 'axios'
 
 
 const UploadPage: React.FC = () => {
-  const { user } = useUserStore();
+  const { user, setUser } = useCurrentUser();
   const [caption, setCaption] = useState<string>('');
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
@@ -17,9 +17,8 @@ const UploadPage: React.FC = () => {
   const router = useRouter();
 
   useEffect(() => {
-    // If the user data has been fetched and it's not the correct user, redirect them
     if (!user) {
-      router.push('/'); // Redirect to home page or any other page you prefer
+      router.push('/');
     }
   }, [user, router]);
 
@@ -76,7 +75,7 @@ const UploadPage: React.FC = () => {
       <Head>
         <title>Upload Photo</title>
       </Head>
-      <Navbar />
+      <Navbar user={user} setUser={setUser} />
       <Flex maxW="500px" px={5} py={5} direction="column" >
         <Heading mb={6}>Upload a photo</Heading>
         <form onSubmit={handleSubmit}>

@@ -1,16 +1,18 @@
 import { Box, Flex, Button, Text, Menu, MenuButton, MenuItem, MenuList, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalFooter, ModalCloseButton, Input, useDisclosure, useToast } from '@chakra-ui/react'
 import { useRouter } from "next/router";
 import { User } from '../types/types';
-import { useState } from 'react'
+import { Dispatch, SetStateAction, useState } from 'react'
 import axios from 'axios'
-import useUserStore from '../store/userStore';
 
+interface NavbarProps {
+  user: User | null;
+  setUser: Dispatch<SetStateAction<User | null>>
+}
 
-const Navbar = () => {
+const Navbar = ({ user, setUser }: NavbarProps) => {
 
   const router = useRouter();
 
-  const { user, setUser } = useUserStore();
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
