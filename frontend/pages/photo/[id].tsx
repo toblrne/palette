@@ -9,6 +9,7 @@ import useCurrentUser from '../../hooks/useCurrentUser';
 import { Like } from '../../types/types'
 import { FaHeart, FaRegHeart } from 'react-icons/fa';
 import { DeleteIcon } from '@chakra-ui/icons'
+import Link from 'next/link';
 
 
 
@@ -169,7 +170,9 @@ const PhotoPage = () => {
               {comments.map(comment => (
                 <Flex key={comment.id} mb="4" align="center" justify="space-between">
                   <Box flex="1">
-                    <Text as="span" fontWeight="bold">{comment.user.username}: </Text>
+                    <Link href={`/${comment.user.id}/photos`}>
+                      <Text as="span" fontWeight="bold">{comment.user.username}: </Text>
+                    </Link>
                     <Text as="span">{comment.content}</Text>
                   </Box>
                   {user && user.id === comment.userId ? (

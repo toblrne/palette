@@ -112,3 +112,43 @@ export const deletePost = async (req: Request, res: Response) => {
     res.status(500).json({ error: "Error deleting post" });
   }
 };
+
+
+export const getPostsByUser = async (req: Request, res: Response) => {
+  try {
+    const userId = parseInt(req.params.userId);
+    const skip = Number(req.query.skip) || 0;
+    const limit = Number(req.query.limit) || 9;  // default to 9 posts if not provided
+
+    if (isNaN(userId)) return res.status(400).json({ error: "Invalid User ID" });
+
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) return res.status(404).json({ error: "User not found" });
+
+    const posts = await prisma.post.findMany({
+      where: { userId: user.id },
+      orderBy: {
+        createdAt: 'desc' // latest posts first
+      },
+      include: {
+        user: true,
+        comments: true,
+        likes: true,
+      },
+      skip: skip,
+      take: limit,
+    });
+
+    // Return both the posts and the username, even if the posts array is empty
+    res.status(200).json({
+      username: user.username,
+      posts: posts
+    });
+  } catch (error) {
+    console.error("Error getting posts by user", error);
+    res.status(500).json({ error: "Error getting posts by user" });
+  }
+};

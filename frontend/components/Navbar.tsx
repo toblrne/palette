@@ -94,7 +94,7 @@ const Navbar = ({ user, setUser }: NavbarProps) => {
                 </MenuItem>
                 <MenuItem
                   onClick={() => {
-                    router.push("/u/your-photos");
+                    router.push(`/${user?.id}/photos`);
                   }}
                 >
                   Your photos
