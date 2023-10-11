@@ -8,6 +8,9 @@ import Navbar from '../../components/Navbar';
 import useCurrentUser from '../../hooks/useCurrentUser';
 import { Like } from '../../types/types'
 import { FaHeart, FaRegHeart } from 'react-icons/fa';
+import { DeleteIcon } from '@chakra-ui/icons'
+
+
 
 const PhotoPage = () => {
   const router = useRouter();
@@ -108,6 +111,17 @@ const PhotoPage = () => {
     }
   };
 
+  const handleDeleteComment = async (commentId: number) => {
+    try {
+      await axios.delete(`http://localhost:3001/posts/${id}/comments/${commentId}`, {
+        data: { userId: user?.id }
+      });
+      setComments(prevComments => prevComments.filter(comment => comment.id !== commentId));
+    } catch (error) {
+      console.error("Error deleting comment:", error);
+    }
+  };
+
 
   return (
     <Flex minH="100vh" minW="100vh" direction="column" overflow="scroll">
@@ -151,13 +165,24 @@ const PhotoPage = () => {
             <Divider my={4} />
 
             {/* Comments display section */}
-            <Box overflowY="scroll" maxHeight={{ sm: `260px`, md: "460px", lg: "620px" }}>
+            <Box overflowY="auto" maxHeight={{ sm: `260px`, md: "460px", lg: "620px" }}>
               {comments.map(comment => (
-                <Box key={comment.id} mb="2">
-                  <Text as="span" fontWeight="bold">{comment.user.username}: </Text>
-                  <Text as="span">{comment.content}</Text>
-                </Box>
+                <Flex key={comment.id} mb="2" align="center" justify="space-between">
+                  <Box flex="1">
+                    <Text as="span" fontWeight="bold">{comment.user.username}: </Text>
+                    <Text as="span">{comment.content}</Text>
+                  </Box>
+                  {user && user.id === comment.userId && (
+                    <Button
+                      onClick={() => handleDeleteComment(comment.id)}
+                      cursor="pointer"
+                    >
+                      <DeleteIcon />
+                    </Button>
+                  )}
+                </Flex>
               ))}
+
             </Box>
 
             {/* Comment form */}
