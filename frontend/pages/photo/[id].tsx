@@ -167,23 +167,26 @@ const PhotoPage = () => {
             {/* Comments display section */}
             <Box overflowY="auto" maxHeight={{ sm: `260px`, md: "460px", lg: "620px" }}>
               {comments.map(comment => (
-                <Flex key={comment.id} mb="2" align="center" justify="space-between">
+                <Flex key={comment.id} mb="4" align="center" justify="space-between">
                   <Box flex="1">
                     <Text as="span" fontWeight="bold">{comment.user.username}: </Text>
                     <Text as="span">{comment.content}</Text>
                   </Box>
-                  {user && user.id === comment.userId && (
-                    <Button
+                  {user && user.id === comment.userId ? (
+                    <Button h={8}
                       onClick={() => handleDeleteComment(comment.id)}
                       cursor="pointer"
                     >
                       <DeleteIcon />
                     </Button>
+                  ) : (
+                    // placeholder
+                    <Box width={6} height={8}></Box>
                   )}
                 </Flex>
               ))}
-
             </Box>
+
 
             {/* Comment form */}
             <Box as="form" mt="4" onSubmit={handleCommentSubmit}>
