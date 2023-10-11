@@ -4,6 +4,7 @@ import { User } from '../types/types'
 
 function useCurrentUser() {
   const [user, setUser] = useState<User | null>(null);
+  const [loadingUser, setLoadingUser] = useState(true);
 
   useEffect(() => {
     const fetchCurrentUser = async () => {
@@ -17,13 +18,15 @@ function useCurrentUser() {
         }
       } catch (error) {
         console.error("Error fetching current user", error);
+      } finally {
+        setLoadingUser(false);
       }
     };
 
     fetchCurrentUser();
   }, []);
 
-  return { user, setUser }; // Return both user and setUser
+  return { user, setUser, loadingUser };
 }
 
 export default useCurrentUser;

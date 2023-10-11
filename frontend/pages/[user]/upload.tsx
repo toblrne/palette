@@ -9,12 +9,18 @@ import axios from 'axios'
 
 
 const UploadPage: React.FC = () => {
-  const { user, setUser } = useCurrentUser();
+  const { user, setUser, loadingUser } = useCurrentUser();
   const [caption, setCaption] = useState<string>('');
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
 
   const router = useRouter();
+
+  useEffect(() => {
+    if (!loadingUser && !user) {
+      router.push('/'); // or wherever you want to redirect unauthenticated users
+    }
+  }, [loadingUser, user]);
 
 
 
