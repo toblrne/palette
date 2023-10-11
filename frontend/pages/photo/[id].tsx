@@ -6,6 +6,8 @@ import { Box, Input, Divider, Heading, Image, Flex, Text, Button, FormControl, F
 import Head from 'next/head';
 import Navbar from '../../components/Navbar';
 import useCurrentUser from '../../hooks/useCurrentUser';
+import { Like } from '../../types/types'
+import { FaHeart, FaRegHeart } from 'react-icons/fa';
 
 const PhotoPage = () => {
   const router = useRouter();
@@ -60,6 +62,53 @@ const PhotoPage = () => {
     }
   };
 
+  const handleLike = async () => {
+    try {
+      const response = await axios.post(`http://localhost:3001/posts/${id}/likes`, {
+        userId: user?.id
+      });
+
+      const newLike = response.data;  // Assuming the server returns the newly created Like
+
+      setPost(prevPost => {
+        if (!prevPost) return null;
+        return {
+          ...prevPost,
+          likes: [...prevPost.likes, newLike]
+        };
+      });
+    } catch (error) {
+      console.error("Error liking post:", error);
+    }
+  };
+
+
+  const handleUnlike = async () => {
+    if (!post || !user) return;
+
+    const like = post.likes.find(l => l.userId === user.id);
+
+    if (!like) return;
+
+    try {
+      await axios.delete(`http://localhost:3001/posts/${post.id}/likes/${like.id}`);
+
+      setPost(prevPost => {
+        if (!prevPost) return null;
+
+        const updatedLikes = prevPost.likes.filter(l => l.userId !== user.id);
+
+        return {
+          ...prevPost,
+          likes: updatedLikes
+        };
+      });
+    } catch (error) {
+      console.error("Error unliking the post:", error);
+    }
+  };
+
+
   return (
     <Flex minH="100vh" minW="100vh" direction="column" overflow="scroll">
       <Head>
@@ -87,7 +136,17 @@ const PhotoPage = () => {
           >
             <Flex direction="row" align="center">
               <Heading size="lg" mr="auto">{post.caption}</Heading>
-              <> Like Button Temp</>
+              {post && user && post.likes.some(l => l.userId === user.id) ? (
+                <Box onClick={handleUnlike} cursor="pointer" display="flex" alignItems="center">
+                  <FaHeart color="red" />
+                  <Text ml={2}>{post.likes.length}</Text>
+                </Box>
+              ) : (
+                <Box onClick={handleLike} cursor="pointer" display="flex" alignItems="center">
+                  <FaRegHeart color="gray" />
+                  <Text ml={2}>{post.likes.length}</Text>
+                </Box>
+              )}
             </Flex>
             <Divider my={4} />
 
