@@ -27,7 +27,7 @@ const Home: NextPage<HomeProps> = ({ initialPosts = [], user }) => {
     if (inView && hasMore) {
       const fetchPosts = async () => {
         try {
-          const res = await axios.get(`http://localhost:3001/posts?skip=${(page - 1) * 9}&limit=9`);
+          const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/posts?skip=${(page - 1) * 9}&limit=9`);
           if (res.data.length > 0) {
             setPosts(prevPosts => [...prevPosts, ...res.data]);
             setPage(prevPage => prevPage + 1);
@@ -72,7 +72,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   let user = null;
   try {
-    const userRes = await axios.get('http://localhost:3001/users/me', {
+    const userRes = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/users/me`, {
       headers: {
         cookie: cookie,
       },
@@ -83,7 +83,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   }
 
-  const postsRes = await axios.get(`http://localhost:3001/posts?skip=0&limit=9`);
+  const postsRes = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/posts?skip=0&limit=9`);
 
   return {
     props: {

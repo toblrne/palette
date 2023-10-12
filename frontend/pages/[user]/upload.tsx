@@ -3,7 +3,6 @@ import { useRouter } from 'next/router';
 import Navbar from '../../components/Navbar';
 import { Box, Input, Heading, Flex, Text, Button, useToast } from '@chakra-ui/react';
 import Head from 'next/head';
-import useCurrentUser from '../../hooks/useCurrentUser';
 import { useEffect, useState } from 'react'
 import axios from 'axios'
 import { GetServerSideProps } from 'next';
@@ -42,7 +41,7 @@ const UploadPage: React.FC<UploadPageProps> = ({ user }) => {
 
     try {
 
-      const { data } = await axios.get(`http://localhost:3001/posts/url`, {
+      const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/posts/url`, {
         params: {
           fileName: file.name,
           fileType: file.type
@@ -57,7 +56,7 @@ const UploadPage: React.FC<UploadPageProps> = ({ user }) => {
         },
       });
 
-      const response = await axios.post('http://localhost:3001/posts', {
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/posts`, {
         userId: user.id,
         imageUrl: url,
         caption
@@ -125,9 +124,9 @@ const UploadPage: React.FC<UploadPageProps> = ({ user }) => {
 export default UploadPage;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const cookie = context.req.headers.cookie; 
+  const cookie = context.req.headers.cookie;
   try {
-    const res = await axios.get('http://localhost:3001/users/me', {
+    const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/users/me`, {
       headers: {
         cookie: cookie,
       },

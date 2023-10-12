@@ -33,7 +33,7 @@ const LikedPosts: NextPage<LikedPostsProps> = ({ initialUser, initialData }) => 
     if (inView && hasMore) {
       const fetchPosts = async () => {
         try {
-          const res = await axios.get(`http://localhost:3001/posts/likes/user/${router.query.user}?skip=${(page - 1) * 9}&limit=9`);
+          const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/posts/likes/user/${router.query.user}?skip=${(page - 1) * 9}&limit=9`);
           if (res.data.posts.length > 0) {
             setPosts(prevPosts => [...prevPosts, ...res.data.posts]);
             setPage(prevPage => prevPage + 1);
@@ -87,7 +87,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   let user = null;
   try {
-    const userRes = await axios.get('http://localhost:3001/users/me', {
+    const userRes = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/users/me`, {
       headers: {
         cookie: cookie,
       },
@@ -97,7 +97,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     console.error("Error fetching user details", error);
   }
 
-  const postsRes = await axios.get(`http://localhost:3001/posts/likes/user/${userId}?skip=0&limit=9`);
+  const postsRes = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/posts/likes/user/${userId}?skip=0&limit=9`);
 
   return {
     props: {

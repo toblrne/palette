@@ -48,7 +48,7 @@ const Navbar = ({ user }: NavbarProps) => {
 
   const login = async () => {
     try {
-      const response = await axios.post('http://localhost:3001/users/login', { email });
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/users/login`, { email });
       toast({
         title: "Emailed",
         description: `A link has been sent to ${email}`,
@@ -112,7 +112,7 @@ const Navbar = ({ user }: NavbarProps) => {
                 <MenuItem
                   onClick={async () => {
                     try {
-                      await axios.post('http://localhost:3001/users/logout', null, {
+                      await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/users/logout`, null, {
                         withCredentials: true,
                       });
                       if (

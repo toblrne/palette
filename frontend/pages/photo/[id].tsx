@@ -32,7 +32,7 @@ const PhotoPage: React.FC<PhotoPageProps> = ({ initialPost, initialComments, use
     if (!newComment) return;
 
     try {
-      const response = await axios.post(`http://localhost:3001/posts/${id}/comments`, {
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/posts/${id}/comments`, {
         userId: user?.id,
         content: newComment,
       });
@@ -51,11 +51,11 @@ const PhotoPage: React.FC<PhotoPageProps> = ({ initialPost, initialComments, use
 
   const handleLike = async () => {
     try {
-      const response = await axios.post(`http://localhost:3001/posts/${id}/likes`, {
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/posts/${id}/likes`, {
         userId: user?.id
       });
 
-      const newLike = response.data;  
+      const newLike = response.data;
 
       setPost(prevPost => {
         if (!prevPost) return null;
@@ -78,7 +78,7 @@ const PhotoPage: React.FC<PhotoPageProps> = ({ initialPost, initialComments, use
     if (!like) return;
 
     try {
-      await axios.delete(`http://localhost:3001/posts/${post.id}/likes/${like.id}`);
+      await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/posts/${post.id}/likes/${like.id}`);
 
       setPost(prevPost => {
         if (!prevPost) return null;
@@ -97,7 +97,7 @@ const PhotoPage: React.FC<PhotoPageProps> = ({ initialPost, initialComments, use
 
   const handleDeleteComment = async (commentId: number) => {
     try {
-      await axios.delete(`http://localhost:3001/posts/${id}/comments/${commentId}`, {
+      await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/posts/${id}/comments/${commentId}`, {
         data: { userId: user?.id }
       });
       setComments(prevComments => prevComments.filter(comment => comment.id !== commentId));
@@ -163,7 +163,7 @@ const PhotoPage: React.FC<PhotoPageProps> = ({ initialPost, initialComments, use
                           <DeleteIcon />
                         </Button>
                       ) : (
-                      
+
                         <Box width={6} height={8}></Box>
                       )}
                     </Flex>
@@ -207,14 +207,14 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   let user: User | null = null;
 
   try {
-    const postResponse = await axios.get(`http://localhost:3001/posts/${postId}`);
+    const postResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/posts/${postId}`);
     post = postResponse.data;
 
-    const commentsResponse = await axios.get(`http://localhost:3001/posts/${postId}/comments`);
+    const commentsResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/posts/${postId}/comments`);
     comments = commentsResponse.data;
 
-   
-    const userRes = await axios.get('http://localhost:3001/users/me', {
+
+    const userRes = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/users/me`, {
       headers: {
         cookie: context.req.headers.cookie,
       },
