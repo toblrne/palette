@@ -55,7 +55,7 @@ const PhotoPage: React.FC<PhotoPageProps> = ({ initialPost, initialComments, use
         userId: user?.id
       });
 
-      const newLike = response.data;  // Assuming the server returns the newly created Like
+      const newLike = response.data;  
 
       setPost(prevPost => {
         if (!prevPost) return null;
@@ -127,49 +127,53 @@ const PhotoPage: React.FC<PhotoPageProps> = ({ initialPost, initialComments, use
             borderRadius="8px"
             p="2"
           >
-            <Flex direction="row" align="center">
-              <Heading size="lg" mr="auto">{post.caption}</Heading>
-              {post && user && post.likes.some(l => l.userId === user.id) ? (
-                <Box onClick={handleUnlike} cursor="pointer" display="flex" alignItems="center">
-                  <FaHeart color="red" />
-                  <Text ml={2}>{post.likes.length}</Text>
-                </Box>
-              ) : (
-                <Box onClick={handleLike} cursor="pointer" display="flex" alignItems="center">
-                  <FaRegHeart color="gray" />
-                  <Text ml={2}>{post.likes.length}</Text>
-                </Box>
-              )}
-            </Flex>
-            <Divider my={4} />
-
-            {/* Comments display section */}
-            <Box overflowY="auto" maxHeight={{ sm: `260px`, md: "460px", lg: "620px" }}>
-              {comments.map(comment => (
-                <Flex key={comment.id} mb="4" align="center" justify="space-between">
-                  <Box flex="1">
-                    <Link href={`/${comment.user.id}/photos`}>
-                      <Text as="span" fontWeight="bold">{comment.user.username}: </Text>
-                    </Link>
-                    <Text as="span">{comment.content}</Text>
-                  </Box>
-                  {user && user.id === comment.userId ? (
-                    <Button h={8}
-                      onClick={() => handleDeleteComment(comment.id)}
-                      cursor="pointer"
-                    >
-                      <DeleteIcon />
-                    </Button>
+            <Flex direction="column" height="100%">
+              <Flex direction="column" >
+                <Flex direction="row" align="center">
+                  <Heading size="lg" mr="auto">{post.caption}</Heading>
+                  {post && user && post.likes.some(l => l.userId === user.id) ? (
+                    <Box onClick={handleUnlike} cursor="pointer" display="flex" alignItems="center">
+                      <FaHeart color="red" />
+                      <Text ml={2}>{post.likes.length}</Text>
+                    </Box>
                   ) : (
-                    // placeholder
-                    <Box width={6} height={8}></Box>
+                    <Box onClick={handleLike} cursor="pointer" display="flex" alignItems="center">
+                      <FaRegHeart color="gray" />
+                      <Text ml={2}>{post.likes.length}</Text>
+                    </Box>
                   )}
                 </Flex>
-              ))}
-            </Box>
+                <Divider my={4} />
 
+                {/* Comments display section */}
+                <Box overflowY="auto" height={{ sm: `260px`, md: "460px", lg: "820px" }}>
+                  {comments.map(comment => (
+                    <Flex key={comment.id} mb="4" align="center" justify="space-between">
+                      <Box flex="1">
+                        <Link href={`/${comment.user.id}/photos`}>
+                          <Text as="span" fontWeight="bold">{comment.user.username}: </Text>
+                        </Link>
+                        <Text as="span">{comment.content}</Text>
+                      </Box>
+                      {user && user.id === comment.userId ? (
+                        <Button h={8}
+                          onClick={() => handleDeleteComment(comment.id)}
+                          cursor="pointer"
+                        >
+                          <DeleteIcon />
+                        </Button>
+                      ) : (
+                      
+                        <Box width={6} height={8}></Box>
+                      )}
+                    </Flex>
+                  ))}
+                </Box>
+              </Flex>
 
-            {/* Comment form */}
+              {/* Comment form */}
+
+            </Flex>
             {user && <Box as="form" mt="4" onSubmit={handleCommentSubmit}>
               <Flex>
                 <FormControl flex="1" mr="2">
@@ -209,7 +213,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     const commentsResponse = await axios.get(`http://localhost:3001/posts/${postId}/comments`);
     comments = commentsResponse.data;
 
-    // Assuming you have an endpoint to get the current user (adjust as needed)
+   
     const userRes = await axios.get('http://localhost:3001/users/me', {
       headers: {
         cookie: context.req.headers.cookie,

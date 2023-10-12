@@ -25,20 +25,20 @@ app.use(
     origin:
       process.env.NODE_ENV === 'production'
         ? process.env.PRODUCTION_URL
-        : 'http://localhost:3000', // Adjust as needed
+        : 'http://localhost:3000', 
     credentials: true,
   })
 );
 
 app.use(
   session({
-    name: 'pale', // You can replace this with a name related to your project
+    name: 'pale', 
     store: redisStoreInstance,
     secret: process.env.SESSION_SECRET as string,
     resave: false,
     saveUninitialized: true,
     cookie: {
-      maxAge: 1000 * 60 * 60 * 24 * 30, // 30 days
+      maxAge: 1000 * 60 * 60 * 24 * 30, 
       httpOnly: true,
       sameSite: 'lax',
       secure: process.env.NODE_ENV === 'production',

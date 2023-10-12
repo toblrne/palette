@@ -6,7 +6,7 @@ import axios from 'axios'
 
 interface NavbarProps {
   user: User | null;
-  // setUser?: Dispatch<SetStateAction<User | null>>
+
 }
 
 const Navbar = ({ user }: NavbarProps) => {
@@ -114,9 +114,7 @@ const Navbar = ({ user }: NavbarProps) => {
                     try {
                       await axios.post('http://localhost:3001/users/logout', null, {
                         withCredentials: true,
-                      }); // Adjusted the URL to match your logout endpoint
-
-                      // Redirect or update state as needed after successful logout
+                      });
                       if (
                         router.pathname === "/u/create-photo" ||
                         router.pathname === "/u/your-photos" ||

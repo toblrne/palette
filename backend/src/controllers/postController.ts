@@ -157,7 +157,7 @@ export const getLikedPostsByUser = async (req: Request, res: Response) => {
   try {
     const userId = parseInt(req.params.userId);
     const skip = Number(req.query.skip) || 0;
-    const limit = Number(req.query.limit) || 9;  // default to 9 posts if not provided
+    const limit = Number(req.query.limit) || 9;
 
     if (isNaN(userId)) return res.status(400).json({ error: "Invalid User ID" });
 
@@ -176,7 +176,7 @@ export const getLikedPostsByUser = async (req: Request, res: Response) => {
         }
       },
       orderBy: {
-        createdAt: 'desc' // latest liked posts first
+        createdAt: 'desc'
       },
       include: {
         user: true,

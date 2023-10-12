@@ -16,7 +16,7 @@ interface HomeProps {
 
 const Home: NextPage<HomeProps> = ({ initialPosts = [], user }) => {
   const [posts, setPosts] = useState<Post[]>(initialPosts);
-  const [page, setPage] = useState<number>(2); // Starting from page 2 since initial posts are already fetched
+  const [page, setPage] = useState<number>(2);
   const [hasMore, setHasMore] = useState<boolean>(true);
 
   const { ref, inView } = useInView({
@@ -80,14 +80,14 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     user = userRes.data.user;
   } catch (error) {
     console.error("Error fetching user details", error);
-    // If there's an error (like a 401), just proceed without a user.
+
   }
 
   const postsRes = await axios.get(`http://localhost:3001/posts?skip=0&limit=9`);
 
   return {
     props: {
-      user: user, // This will be null if there's no logged-in user.
+      user: user,
       initialPosts: postsRes.data,
     },
   };

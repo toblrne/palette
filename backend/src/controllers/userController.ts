@@ -49,8 +49,8 @@ export const getUser = async (req: Request, res: Response) => {
     const user = await prisma.user.findUnique({
       where: { id: Number(userId) },
       include: {
-        posts: true, // includes the posts of the user
-        likes: { include: { post: true } } // includes the liked posts
+        posts: true,
+        likes: { include: { post: true } }
       }
     });
     if (!user) return res.status(404).json({ error: "User not found" });
@@ -85,7 +85,7 @@ export const loginUser = async (req: Request, res: Response) => {
 
 export const verifyUser = async (req: Request, res: Response) => {
   const { email, token } = req.query;
-  const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3000'; // Replace this with your frontend URL
+  const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3000';
 
   if (!email || !token) {
     return res.redirect(`${FRONTEND_URL}/?error=Email and token are required`);
@@ -112,10 +112,10 @@ export const verifyUser = async (req: Request, res: Response) => {
 
     req.session!.userId = user.id;
 
-    res.redirect(`${FRONTEND_URL}/?login=success`); // Redirect to frontend with success message
+    res.redirect(`${FRONTEND_URL}/?login=success`);
   } catch (error) {
     console.error("Error verifying user", error);
-    res.redirect(`${FRONTEND_URL}/?error=Error verifying user`); // Redirect to frontend with error message
+    res.redirect(`${FRONTEND_URL}/?error=Error verifying user`);
   }
 };
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import { useRouter } from 'next/router';
 import Navbar from '../../components/Navbar';
-import { Box, Input, Heading, Flex, Text, Button } from '@chakra-ui/react';
+import { Box, Input, Heading, Flex, Text, Button, useToast } from '@chakra-ui/react';
 import Head from 'next/head';
 import useCurrentUser from '../../hooks/useCurrentUser';
 import { useEffect, useState } from 'react'
@@ -14,20 +14,17 @@ interface UploadPageProps {
 }
 
 const UploadPage: React.FC<UploadPageProps> = ({ user }) => {
-  // const { user, setUser, loadingUser } = useCurrentUser();
+
   const [caption, setCaption] = useState<string>('');
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
+
+  const toast = useToast();
 
 
 
   const router = useRouter();
 
-  // useEffect(() => {
-  //   if (!loadingUser && !user) {
-  //     router.push('/'); // or wherever you want to redirect unauthenticated users
-  //   }
-  // }, [loadingUser, user]);
 
 
 
@@ -44,7 +41,7 @@ const UploadPage: React.FC<UploadPageProps> = ({ user }) => {
     setLoading(true);
 
     try {
-      // Step 1: Get a presigned URL from the backend
+
       const { data } = await axios.get(`http://localhost:3001/posts/url`, {
         params: {
           fileName: file.name,
@@ -53,21 +50,26 @@ const UploadPage: React.FC<UploadPageProps> = ({ user }) => {
       });
       const { presignedURL, url } = data;
 
-      // Step 2: Use the presigned URL to upload the image
+
       await axios.put(presignedURL, file, {
         headers: {
           'Content-Type': file.type,
         },
       });
 
-      // Step 3: Send the image URL along with the caption to the backend
       const response = await axios.post('http://localhost:3001/posts', {
         userId: user.id,
         imageUrl: url,
         caption
       });
 
-      // ... handle success, perhaps redirect to the post or a success message
+      toast({
+        title: "Uploaded",
+        description: `Your photo has been uploaded!`,
+        status: "success",
+        duration: 9000,
+        isClosable: true,
+      });
 
 
 
@@ -123,7 +125,7 @@ const UploadPage: React.FC<UploadPageProps> = ({ user }) => {
 export default UploadPage;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const cookie = context.req.headers.cookie; // If using cookies
+  const cookie = context.req.headers.cookie; 
   try {
     const res = await axios.get('http://localhost:3001/users/me', {
       headers: {
