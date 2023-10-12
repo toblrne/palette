@@ -19,7 +19,7 @@ const UploadPage: React.FC<UploadPageProps> = ({ user }) => {
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
 
-  console.log(user)
+
 
   const router = useRouter();
 
@@ -69,7 +69,7 @@ const UploadPage: React.FC<UploadPageProps> = ({ user }) => {
 
       // ... handle success, perhaps redirect to the post or a success message
 
-      console.log("Successfully uploaded")
+
 
     } catch (error) {
       console.error('Upload failed:', error);

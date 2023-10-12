@@ -38,7 +38,6 @@ export const getMe = async (req: Request, res: Response): Promise<void> => {
 
 
 export const getUser = async (req: Request, res: Response) => {
-  console.log('getUser called');
   const { userId } = req.params;
 
   if (!userId || isNaN(Number(userId))) {
@@ -65,7 +64,6 @@ export const getUser = async (req: Request, res: Response) => {
 export const loginUser = async (req: Request, res: Response) => {
 
   const { email } = req.body;
-  console.log("Email", email)
   try {
     const unhashed = v4();
     const hashed = await argon2.hash(unhashed);
@@ -86,7 +84,6 @@ export const loginUser = async (req: Request, res: Response) => {
 };
 
 export const verifyUser = async (req: Request, res: Response) => {
-  console.log('verifyUser called');
   const { email, token } = req.query;
   const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3000'; // Replace this with your frontend URL
 

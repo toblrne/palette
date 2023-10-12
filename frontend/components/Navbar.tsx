@@ -15,7 +15,7 @@ const Navbar = ({ user }: NavbarProps) => {
 
   const [me, setMe] = useState(user)
 
-  console.log(me)
+
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
