@@ -5,43 +5,26 @@ import { Post, Comment } from '../../types/types'
 import { Box, Input, Divider, Heading, Image, Flex, Text, Button, FormControl, FormLabel } from '@chakra-ui/react';
 import Head from 'next/head';
 import Navbar from '../../components/Navbar';
-import useCurrentUser from '../../hooks/useCurrentUser';
-import { Like } from '../../types/types'
+import { Like, User } from '../../types/types'
 import { FaHeart, FaRegHeart } from 'react-icons/fa';
 import { DeleteIcon } from '@chakra-ui/icons'
 import Link from 'next/link';
+import { GetServerSideProps } from 'next';
 
+interface PhotoPageProps {
+  initialPost: Post | null;
+  initialComments: Comment[];
+  user: User | null;
+}
 
-
-const PhotoPage = () => {
+const PhotoPage: React.FC<PhotoPageProps> = ({ initialPost, initialComments, user }) => {
   const router = useRouter();
   const { id } = router.query;
 
-  const { user, setUser } = useCurrentUser();
-
-  console.log(user)
-
-  const [post, setPost] = useState<Post | null>(null);
-  const [comments, setComments] = useState<Comment[]>([]);
+  const [post, setPost] = useState<Post | null>(initialPost);
+  const [comments, setComments] = useState<Comment[]>(initialComments);
   const [newComment, setNewComment] = useState<string>('');
 
-  useEffect(() => {
-    const fetchPostAndComments = async () => {
-      if (!id) return;
-
-      try {
-        const postResponse = await axios.get(`http://localhost:3001/posts/${id}`);
-        setPost(postResponse.data);
-
-        const commentsResponse = await axios.get(`http://localhost:3001/posts/${id}/comments`);
-        setComments(commentsResponse.data);
-      } catch (error) {
-        console.error("Error fetching post and comments:", error);
-      }
-    };
-
-    fetchPostAndComments();
-  }, [id]);
 
   const handleCommentSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -129,21 +112,16 @@ const PhotoPage = () => {
       <Head>
         <title>Upload Photo</title>
       </Head>
-      <Navbar user={user} setUser={setUser} />
+      <Navbar user={user} />
       {post ? (
         <Flex m={30} justify="center">
-          <Box
-            position="relative"
-            width={{ sm: `320px`, image: "480px", md: "600px", lg: "800px" }}
-            height={{ sm: `260px`, image: "370px", md: "460px", lg: "620px" }}
-          >
-            <Image src={post.imageUrl} alt={post.caption} objectFit='cover' />
+          <Box flex="1" width="50%" position="relative">
+            <Image src={post.imageUrl} alt={post.caption} objectFit="cover" width="100%" height="100%" />
           </Box>
           <Flex
+            flex="1"
+            width="50%"
             ml={8}
-            grow={1}
-            width={{ sm: `320px`, image: "480px", md: "600px", lg: "800px" }}
-            height={{ sm: `260px`, image: "370px", md: "460px", lg: "620px" }}
             direction="column"
             border="1px black solid"
             borderRadius="8px"
@@ -192,7 +170,7 @@ const PhotoPage = () => {
 
 
             {/* Comment form */}
-            <Box as="form" mt="4" onSubmit={handleCommentSubmit}>
+            {user && <Box as="form" mt="4" onSubmit={handleCommentSubmit}>
               <Flex>
                 <FormControl flex="1" mr="2">
                   <Input
@@ -204,7 +182,7 @@ const PhotoPage = () => {
                 </FormControl>
                 <Button alignSelf="flex-end" type="submit">Submit</Button>
               </Flex>
-            </Box>
+            </Box>}
           </Flex>
 
         </Flex >
@@ -217,3 +195,36 @@ const PhotoPage = () => {
 };
 
 export default PhotoPage;
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const postId = context.query.id as string;
+  let post: Post | null = null;
+  let comments: Comment[] = [];
+  let user: User | null = null;
+
+  try {
+    const postResponse = await axios.get(`http://localhost:3001/posts/${postId}`);
+    post = postResponse.data;
+
+    const commentsResponse = await axios.get(`http://localhost:3001/posts/${postId}/comments`);
+    comments = commentsResponse.data;
+
+    // Assuming you have an endpoint to get the current user (adjust as needed)
+    const userRes = await axios.get('http://localhost:3001/users/me', {
+      headers: {
+        cookie: context.req.headers.cookie,
+      },
+    });
+    user = userRes.data.user;
+  } catch (error) {
+    console.error("Error fetching post, comments, and user:", error);
+  }
+
+  return {
+    props: {
+      initialPost: post,
+      initialComments: comments,
+      user: user,
+    },
+  };
+};

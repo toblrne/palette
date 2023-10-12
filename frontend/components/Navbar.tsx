@@ -6,13 +6,16 @@ import axios from 'axios'
 
 interface NavbarProps {
   user: User | null;
-  setUser: Dispatch<SetStateAction<User | null>>
+  // setUser?: Dispatch<SetStateAction<User | null>>
 }
 
-const Navbar = ({ user, setUser }: NavbarProps) => {
+const Navbar = ({ user }: NavbarProps) => {
 
   const router = useRouter();
 
+  const [me, setMe] = useState(user)
+
+  console.log(me)
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
@@ -80,7 +83,7 @@ const Navbar = ({ user, setUser }: NavbarProps) => {
           Palette
         </Text>
         <Box ml="auto">
-          {user ? (
+          {me ? (
             <Menu>
               <MenuButton as={Button}>
                 {user?.username}
@@ -121,7 +124,7 @@ const Navbar = ({ user, setUser }: NavbarProps) => {
                       ) {
                         await router.push("/");
                       } else {
-                        setUser(null);
+                        setMe(null)
                       }
                     } catch (error) {
                       console.error('Logout failed', error);

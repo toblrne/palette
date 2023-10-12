@@ -6,21 +6,28 @@ import Head from 'next/head';
 import useCurrentUser from '../../hooks/useCurrentUser';
 import { useEffect, useState } from 'react'
 import axios from 'axios'
+import { GetServerSideProps } from 'next';
+import { User } from '../../types/types'
 
+interface UploadPageProps {
+  user: User;
+}
 
-const UploadPage: React.FC = () => {
-  const { user, setUser, loadingUser } = useCurrentUser();
+const UploadPage: React.FC<UploadPageProps> = ({ user }) => {
+  // const { user, setUser, loadingUser } = useCurrentUser();
   const [caption, setCaption] = useState<string>('');
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
 
+  console.log(user)
+
   const router = useRouter();
 
-  useEffect(() => {
-    if (!loadingUser && !user) {
-      router.push('/'); // or wherever you want to redirect unauthenticated users
-    }
-  }, [loadingUser, user]);
+  // useEffect(() => {
+  //   if (!loadingUser && !user) {
+  //     router.push('/'); // or wherever you want to redirect unauthenticated users
+  //   }
+  // }, [loadingUser, user]);
 
 
 
@@ -77,7 +84,7 @@ const UploadPage: React.FC = () => {
       <Head>
         <title>Upload Photo</title>
       </Head>
-      <Navbar user={user} setUser={setUser} />
+      <Navbar user={user} />
       <Flex maxW="500px" px={5} py={5} direction="column" >
         <Heading mb={6}>Upload a photo</Heading>
         <form onSubmit={handleSubmit}>
@@ -115,3 +122,36 @@ const UploadPage: React.FC = () => {
 
 export default UploadPage;
 
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const cookie = context.req.headers.cookie; // If using cookies
+  try {
+    const res = await axios.get('http://localhost:3001/users/me', {
+      headers: {
+        cookie: cookie,
+      },
+    });
+
+    if (res.data.user) {
+      return {
+        props: {
+          user: res.data.user,
+        },
+      };
+    } else {
+      return {
+        redirect: {
+          destination: '/',
+          permanent: false,
+        },
+      };
+    }
+  } catch (error) {
+    console.error("Error fetching user:", error);
+    return {
+      redirect: {
+        destination: '/',
+        permanent: false,
+      },
+    };
+  }
+};

@@ -1,37 +1,39 @@
-import { NextPage } from 'next';
+import { GetServerSideProps, NextPage } from 'next';
 import axios from 'axios';
 import Head from 'next/head';
 import { useState, useEffect } from 'react';
-import { Post } from '../../types/types';
-import { Box, Flex, Grid, Heading, Text } from "@chakra-ui/react";
+import { Post, User } from '../../types/types';
+import { Box, Flex, Grid, Text } from "@chakra-ui/react";
 import Navbar from "../../components/Navbar";
 import Photo from "../../components/Photo";
-import useCurrentUser from '../../hooks/useCurrentUser';
 import { useRouter } from 'next/router';
 import { useInView } from 'react-intersection-observer';
 
-const UserPosts: NextPage = () => {
+interface LikedPostsProps {
+  initialUser: User | null;
+  initialData: {
+    username: string;
+    posts: Post[];
+  };
+}
+
+const LikedPosts: NextPage<LikedPostsProps> = ({ initialUser, initialData }) => {
   const router = useRouter();
-  const { user: currentUser, setUser } = useCurrentUser();
 
-  const [posts, setPosts] = useState<Post[]>([]);
-  const [page, setPage] = useState<number>(1);
+  const [posts, setPosts] = useState<Post[]>(initialData.posts || []);
+  const [page, setPage] = useState<number>(2);
   const [hasMore, setHasMore] = useState<boolean>(true);
-  const [username, setUsername] = useState<string | null>(null);
-
-  const { user } = router.query
+  const [username, setUsername] = useState<string>(initialData.username);
 
   const { ref, inView } = useInView({
     threshold: 0.1
   });
 
   useEffect(() => {
-    if (user && inView && hasMore) {
+    if (inView && hasMore) {
       const fetchPosts = async () => {
         try {
-          const res = await axios.get(`http://localhost:3001/posts/likes/user/${user}?skip=${(page - 1) * 9}&limit=9`);
-          console.log(res)
-          setUsername(res.data.username);
+          const res = await axios.get(`http://localhost:3001/posts/likes/user/${router.query.user}?skip=${(page - 1) * 9}&limit=9`);
           if (res.data.posts.length > 0) {
             setPosts(prevPosts => [...prevPosts, ...res.data.posts]);
             setPage(prevPage => prevPage + 1);
@@ -47,16 +49,14 @@ const UserPosts: NextPage = () => {
       };
       fetchPosts();
     }
-  }, [inView, user]);
-
-
+  }, [inView]);
 
   return (
     <Box minH="100vh" position="relative">
       <Head>
         <title>Palette</title>
       </Head>
-      <Navbar user={currentUser} setUser={setUser} />
+      <Navbar user={initialUser} />
 
       <Flex flexDirection="column" alignItems="center" mt={5}>
         <Text fontSize="xl" fontWeight="bold" mb={4}>
@@ -79,4 +79,30 @@ const UserPosts: NextPage = () => {
   );
 };
 
-export default UserPosts;
+export default LikedPosts;
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const cookie = context.req.headers.cookie;
+  const userId = context.query.user as string;
+
+  let user = null;
+  try {
+    const userRes = await axios.get('http://localhost:3001/users/me', {
+      headers: {
+        cookie: cookie,
+      },
+    });
+    user = userRes.data.user;
+  } catch (error) {
+    console.error("Error fetching user details", error);
+  }
+
+  const postsRes = await axios.get(`http://localhost:3001/posts/likes/user/${userId}?skip=0&limit=9`);
+
+  return {
+    props: {
+      initialUser: user,
+      initialData: postsRes.data,
+    },
+  };
+};
