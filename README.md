@@ -10,7 +10,8 @@ Tech Stack: TypeScript, Next.js, React, Express, Node.js, PostgreSQL, Prisma, Re
 
 ![Homepage](https://github.com/toblrne/palette/assets/67180069/0568c44b-11c5-4c9e-b466-9b4e562a3a61)
 
-![Painting](https://github.com/toblrne/palette/assets/67180069/9c16011a-0175-4e01-8e69-e1ed65d8fc5e)
+![Screenshot 2023-10-12 at 6 10 42 PM](https://github.com/toblrne/palette/assets/67180069/8803484e-6ca7-40c9-b96f-2a9d62c90564)
+
 
 ![Upload](https://github.com/toblrne/palette/assets/67180069/7f228133-a314-40ec-9781-05adb9c9e595)
 
